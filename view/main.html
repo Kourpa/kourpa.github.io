@@ -1,0 +1,115 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>DFields</title>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="../style/styles.css">
+
+
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script src="../d3/d3.min.js"></script>
+    <script src="../scripts/notify.min.js"></script>
+    <script src="../scripts/math.js"></script>
+
+</head>
+
+
+    <div id="container">
+        <div id="accordian">
+            <div id="equationInput">
+
+
+                <h3>Equation</h3>
+                    <div class="centered">
+                        <p class="border-dark">First-order Differential Equation in the form: x' = f(t,x)
+                        <input class="centered border" type="text" title="Equation" id="equation" onkeyup="populateParameters()">
+                        </p>
+                        <p class="border-dark">Independent Variable
+                            <input class="centered border" type="text" value="y" maxlength="1" title="Independent Variable" id="independent">
+                        </p>
+                        <p class="border-dark parameters">Parameter Expressions
+                        </p>
+                        <button class="centered border" id="SetEquation" style="width:48%; float:left; background-color:#007fff; color:white;" onclick="setEquation()">Set</button>
+                        <button class="centered border" id="ResetEquation" style="width:48%; float:left; background-color:#007fff; color:white;" onclick="resetEquation()">Reset</button>
+                    </div>
+
+
+                <h3>Manual Input</h3>
+                <div class="centered">
+                    <input class="centered border" type="text" value="x = " title="Variable 1">
+                    <input class="centered border" type="text" value="y = " title="Variable 2">
+                    <p class="border-dark">Interval
+                        <input class="centered border" type="text" value=" ≤ y ≤ " title="Interval">
+                    </p>
+                    <button class="centered border" id="PlotPoint" style="width:48%; float:left; background-color:#007fff; color:white;">Plot</button>
+                    <button class="centered border" id="ResetPoint" style="width:48%; float:left; background-color:#007fff; color:white;">Reset</button>
+                </div>
+
+
+                <h3>Display Window</h3>
+                    <div class="centered">
+                        <p class="border-dark">Maximum Y
+                            <input class="centered border" type="number" value=10 title="Max Y">
+                        </p>
+                        <p class="border-dark">Minimum Y
+                            <input class="centered border" type="number" value=-10 title="Min Y">
+                        </p>
+                        <p class="border-dark">Maximum X
+                            <input class="centered border" type="number" value=10 title="Max X">
+                        </p>
+                        <p class="border-dark">Minimum X
+                            <input class="centered border" type="number" value=-10 title="Min X">
+                        </p>
+                    </div>
+
+
+                <h3>Field Settings</h3>
+                <div class="centered">
+                    <p class="border-dark">Direction Field
+                    <select class="centered border">
+                        <option value="None">None</option>
+                        <option value="Arrow" selected>Arrow</option>
+                        <option value="Line">Line</option>
+                    </select>
+                    </p>
+                    <p class="border-dark">Field Point Per Row
+                        <input class="centered border" type="number" value=20 title="Row points">
+                    </p>
+                    <p class="border-dark">Field Point Per Column
+                        <input class="centered border" type="number" value=20 title="Column points">
+                    </p>
+                </div>
+
+
+                <h3>Solver Settings</h3>
+                <div class="centered">
+                    <p class="border-dark">Step Size
+                        <input class="centered border" type="number" value=0.048 step="0.001" title="Step size">
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div id ="graph"></div>
+    </div>
+
+<script src="../scripts/Graph.js"></script>
+<script src="../scripts/EquationController.js"></script>
+
+    <script>
+
+        $("body").css("overflow", "hidden");
+
+        $("#equationInput").accordion({
+            heightStyle: "fill"
+        });
+
+        resetEquation();
+        initVectors(-10, -10, 10, 10);
+    </script>
+</html>
+
