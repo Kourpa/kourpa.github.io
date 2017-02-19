@@ -88,11 +88,12 @@ var resetEquation = function(){
     saved_params = {};
     populateParameters();
     checkEquation();
+    initGraph();
 };
 
 var setEquation = function(){
     checkEquation();
-    zoomVectors(xMin, yMin, xMax, yMax);
+    initGraph();
 };
 
 var addParameter = function(p, v){

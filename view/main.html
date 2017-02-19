@@ -17,8 +17,7 @@
     <script src="../scripts/math.js"></script>
 
 </head>
-
-
+<body onresize="resize()">
     <div id="container">
         <div id="accordian">
             <div id="equationInput">
@@ -54,16 +53,16 @@
                 <h3>Display Window</h3>
                     <div class="centered">
                         <p class="border-dark">Maximum Y
-                            <input class="centered border" type="number" value=10 title="Max Y">
+                            <input class="centered border" type="number" value=10 title="Max Y" id="yMax">
                         </p>
                         <p class="border-dark">Minimum Y
-                            <input class="centered border" type="number" value=-10 title="Min Y">
+                            <input class="centered border" type="number" value=-10 title="Min Y" id="yMin">
                         </p>
                         <p class="border-dark">Maximum X
-                            <input class="centered border" type="number" value=10 title="Max X">
+                            <input class="centered border" type="number" value=10 title="Max X" id="xMax">
                         </p>
                         <p class="border-dark">Minimum X
-                            <input class="centered border" type="number" value=-10 title="Min X">
+                            <input class="centered border" type="number" value=-10 title="Min X" id="xMin">
                         </p>
                     </div>
 
@@ -78,10 +77,10 @@
                     </select>
                     </p>
                     <p class="border-dark">Field Point Per Row
-                        <input class="centered border" type="number" value=20 title="Row points">
+                        <input class="centered border" type="number" value=20 title="Row points" id="rowVectors">
                     </p>
                     <p class="border-dark">Field Point Per Column
-                        <input class="centered border" type="number" value=20 title="Column points">
+                        <input class="centered border" type="number" value=20 title="Column points" id="columnVectors">
                     </p>
                 </div>
 
@@ -96,7 +95,7 @@
         </div>
         <div id ="graph"></div>
     </div>
-
+</body>
 <script src="../scripts/Graph.js"></script>
 <script src="../scripts/EquationController.js"></script>
 
