@@ -41,8 +41,8 @@
       <file leaf-file-name="main.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/view/main.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" column="56" lean-forward="false" selection-start-line="21" selection-start-column="56" selection-end-line="21" selection-end-column="56" />
+            <state relative-caret-position="386">
+              <caret line="106" column="21" lean-forward="false" selection-start-line="106" selection-start-column="21" selection-end-line="106" selection-end-column="21" />
               <folding />
             </state>
           </provider>
@@ -174,12 +174,20 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1486925867626</updated>
-      <workItem from="1487486871820" duration="335000" />
+      <workItem from="1487486871820" duration="462000" />
     </task>
+    <task id="LOCAL-00001" summary="Loading JS files in wrong order">
+      <created>1487487233316</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1487487233316</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="335000" />
+    <option name="totallyTimeSpent" value="462000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1364" y="0" width="1370" height="772" extended-state="6" />
@@ -219,6 +227,10 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Loading JS files in wrong order" />
+    <option name="LAST_COMMIT_MESSAGE" value="Loading JS files in wrong order" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -298,8 +310,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/view/main.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" column="56" lean-forward="false" selection-start-line="21" selection-start-column="56" selection-end-line="21" selection-end-column="56" />
+        <state relative-caret-position="386">
+          <caret line="106" column="21" lean-forward="false" selection-start-line="106" selection-start-column="21" selection-end-line="106" selection-end-column="21" />
           <folding />
         </state>
       </provider>

@@ -18,10 +18,7 @@
 
 </head>
 
-<script src="../scripts/Graph.js"></script>
-<script src="../scripts/EquationController.js"></script>
-
-<body onresize="resize()">
+<body onresize="onresize()">
     <div id="container">
         <div id="accordian">
             <div id="equationInput">
@@ -101,8 +98,14 @@
     </div>
 </body>
 
+<script src="../scripts/Graph.js"></script>
+<script src="../scripts/EquationController.js"></script>
 
     <script>
+
+        var onresize = function(){
+            resize();
+        };
 
         $("body").css("overflow", "hidden");
 
