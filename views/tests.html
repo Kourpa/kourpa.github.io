@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tests</title>
+
+    <title>Refactored date examples</title>
+
+
+    <link rel="stylesheet" href="../lib/qunit/qunit-2.6.0.css">
+    <link href="../style/site.css" rel="stylesheet">
+    <script src="../lib/qunit/qunit-2.6.0.js"></script>
+    <script type="text/javascript" src="../lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/d3/d3.js"></script>
+    <script type="text/javascript" src="../lib/d3/d3.layout.cloud.js"></script>
+    <script type="text/javascript" src="../lib/wordcloud/d3.wordcloud.js"></script>
+    <script src="../src/main.js"></script>
+
+
+    <script>
+        QUnit.test("Process Filter List", function( assert ) {
+            let filter = ["this", "is", "a", "test", "string"];
+
+            assert.deepEqual(processFilterList("this is a test string"), filter);
+            assert.deepEqual(processFilterList("this\nis\n\na\ntest,string"), filter);
+            assert.deepEqual(processFilterList("this,is,a,test,string"), filter);
+            assert.deepEqual(processFilterList("this is\n a test,string"), filter);
+            assert.deepEqual(processFilterList(null), []);
+            assert.deepEqual(processFilterList(""), [""]);
+            assert.deepEqual(processFilterList([]), []);
+            assert.deepEqual(processFilterList({}), []);
+        });
+
+        QUnit.test("Process Input String", function( assert ) {
+            let input = "The quick brown fox jumps over the lazy dog " +
+                        "The quick brown fox jumps over the lazy " +
+                        "The quick brown fox jumps over the " +
+                        "The quick brown fox jumps over " +
+                        "The quick brown fox jumps " +
+                        "The quick brown fox " +
+                        "The quick brown " +
+                        "The quick " +
+                        "The";
+
+            let filter = processFilterList("the");
+
+            let expected = [];
+            assert.deepEqual(processInput(input, false, true, filter, "t"), expected);
+
+            expected = [{text: "The", size: 9}];
+            assert.deepEqual(processInput(input, false, true, filter, "T"), expected);
+
+            filter = processFilterList("the The");
+            expected = [];
+            assert.deepEqual(processInput(input, false, true, filter, "T"), expected);
+
+            //sorted by count
+            filter = processFilterList("the The");
+            expected = [
+                {text: "quick", size: 8},
+                {text: "brown", size: 7},
+                {text: "fox", size: 6},
+                {text: "jumps", size: 5},
+                {text: "over", size: 4},
+                {text: "lazy", size: 2},
+                {text: "dog", size: 1}
+                ];
+            assert.deepEqual(processInput(input, false, true, filter, ""), expected);
+
+            //sorted by alpha
+            filter = processFilterList("the The");
+            expected = [
+                {text: "brown", size: 7},
+                {text: "dog", size: 1},
+                {text: "fox", size: 6},
+                {text: "jumps", size: 5},
+                {text: "lazy", size: 2},
+                {text: "over", size: 4},
+                {text: "quick", size: 8},
+                ];
+            assert.deepEqual(processInput(input, true, false, filter, ""), expected);
+
+            let expected_no_filter = [
+                {text: "The", size: 9},
+                {text: "quick", size: 8},
+                {text: "brown", size: 7},
+                {text: "fox", size: 6},
+                {text: "jumps", size: 5},
+                {text: "over", size: 4},
+                {text: "the", size: 3},
+                {text: "lazy", size: 2},
+                {text: "dog", size: 1}
+            ];
+
+            assert.deepEqual(processInput(null, true, false, filter, ""), []);
+            assert.deepEqual(processInput(null, null, false, filter, ""), []);
+            assert.deepEqual(processInput(null, null, null, null, null), []);
+            assert.deepEqual(processInput(input, null, null, null, null), expected_no_filter);
+            assert.deepEqual(processInput(input, false, null, null, null), expected_no_filter);
+            assert.deepEqual(processInput(input, false, false, null, null), expected_no_filter);
+
+            expected = [
+                {text: "quick", size: 8},
+                {text: "brown", size: 7},
+                {text: "fox", size: 6},
+                {text: "jumps", size: 5},
+                {text: "over", size: 4},
+                {text: "lazy", size: 2},
+                {text: "dog", size: 1}
+            ];
+            assert.deepEqual(processInput(input, false, false, filter, null), expected);
+
+        });
+    </script>
+</head>
+<body>
+<ul id="nav_bar">
+    <li><a href="wordCloud.html">Word Cloud</a></li>
+    <li><a class="active">Tests</a></li>
+    <li><a href="info.html">Info</a></li>
+</ul>
+<div id="qunit"></div>
+</body>
+</html>
