@@ -72,6 +72,7 @@ $(function () {
         function onError() { }
 
 
+        THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
         new THREE.MTLLoader()
             .setPath('./resources/textures/')
             .load('male02_dds.mtl', function (materials) {
