@@ -10,12 +10,11 @@ $(function () {
     let windowHalfX = window.innerWidth / 2;
     let windowHalfY = window.innerHeight / 2;
 
-    let object;
     let helmet;
 
     init();
     animate();
-    
+
 
     function init() {
 
@@ -44,22 +43,11 @@ $(function () {
         // manager
         function loadModel() {
 
-            object.traverse(function (child) {
-
-                if (child.isMesh) child.material.map = texture;
-
-            });
-
-            object.position.y = - 95;
-            scene.add(object);
-
         }
 
         var manager = new THREE.LoadingManager(loadModel);
 
         manager.onProgress = function (item, loaded, total) {
-
-            console.log(item, loaded, total);
 
         };
 
@@ -83,28 +71,39 @@ $(function () {
 
         function onError() { }
 
-        var loader = new THREE.OBJLoader(manager);
 
-        loader.load('./resources/models/male02.obj', function (obj) {
+        new THREE.MTLLoader()
+            .setPath('./resources/textures/')
+            .load('male02_dds.mtl', function (materials) {
+                materials.preload();
 
-            object = obj;
+                new THREE.OBJLoader()
+                    .setMaterials(materials)
+                    .setPath('./resources/models/')
+                    .load('male02.obj', function (object) {
 
-        }, onProgress, onError);
+                        object.position.y = - 95;
+                        scene.add(object);
+
+                    }, onProgress, onError);
+
+            });
+
 
         var helmetLoader = new THREE.OBJLoader(manager);
         helmetLoader.load('./resources/models/helmet123.obj', function (obj) {
             helmet = obj;
             helmet.position.y += 60;
             helmet.position.x += 2;
-            helmet.rotation.x -= Math.PI/2;
-            helmet.rotation.z += Math.PI/2;
+            helmet.rotation.x -= Math.PI / 2;
+            helmet.rotation.z += Math.PI / 2;
 
             helmet.traverse(function (child) {
 
                 if (child.isMesh) child.material.map = helmetTexture;
 
             });
-            
+
             scene.add(helmet);
         }, onProgress, onError);
 
