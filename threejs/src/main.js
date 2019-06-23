@@ -5,14 +5,11 @@ const fileChanged = function () {
     const $mainTexturePicker = $('#texture-picker-input')
     mainObjectTextures = $mainTexturePicker[0].files;
 
-    if (mainObjectFiles.length > 0 && mainObjectTextures.length > 0) {
+    if (mainObjectFiles.length > 0 && mainObjectTextures.length > 0 || true) {
         init();
         animate();
     }
 }
-
-init();
-animate();
 
 let mainObjectFiles;
 let mainObjectTextures;
