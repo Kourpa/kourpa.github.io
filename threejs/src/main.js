@@ -1,27 +1,34 @@
 $(function () {
-    let mainObjectFiles;
-    let mainObjectTextures;
+    let $parent;
     let container;
     let camera, scene, renderer;
     let cameraControls;
     let raycaster;
     let mouse = new THREE.Vector2(), INTERSECTED;
 
-    let windowHalfX = window.innerWidth / 2;
-    let windowHalfY = window.innerHeight / 2;
+    //default width/height to maximum
+    let width = window.innerWidth;
+    let height = window.innerHeight;
 
     let helmet;
 
     init();
     animate();
 
-
     function init() {
-
         container = document.createElement('div');
-        document.body.appendChild(container);
 
-        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+        $parent = $("#threejs-canvas");
+        if($parent.length === 0){
+            $parent = $('<div style="width:100%; height: 100%"></div>');
+            $('body').append($parent);
+        }
+
+        width = $parent.width();
+        height = $parent.height();
+        $parent.append(container);
+
+        camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000);
         camera.position.z = 250;
 
         // scene
@@ -111,7 +118,7 @@ $(function () {
         //
         renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(width, height);
         container.appendChild(renderer.domElement);
 
         cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -125,19 +132,23 @@ $(function () {
     }
 
     function onDocumentMouseMove(event) {
+        const parentPosition = $(container).position();
+        const parentX = parentPosition.left;
+        const parentY = parentPosition.top;
+
         event.preventDefault();
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        mouse.x = ((event.clientX - parentX) / width) * 2 - 1;
+        mouse.y = -((event.clientY - parentY) / height) * 2 + 1;
     }
 
     function onWindowResize() {
-        windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
-
-        camera.aspect = window.innerWidth / window.innerHeight;
+        width = $parent.width();
+        height = $parent.height();
+        
+        camera.aspect = width / height;
         camera.updateProjectionMatrix();
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(width, height);
     }
 
     //
@@ -161,8 +172,6 @@ $(function () {
                 INTERSECTED = intersects[0].object;
                 INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
                 INTERSECTED.material.emissive.setHex(0xff0000);
-
-                console.log(INTERSECTED.name)
             }
 
         } else {
