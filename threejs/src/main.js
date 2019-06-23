@@ -11,6 +11,9 @@ const fileChanged = function () {
     }
 }
 
+init();
+animate();
+
 let mainObjectFiles;
 let mainObjectTextures;
 let container;
