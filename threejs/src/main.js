@@ -1,148 +1,178 @@
-const fileChanged = function () {
-    const $mainFilePicker = $('#file-picker-input')
-    mainObjectFiles = $mainFilePicker[0].files;
+$(function () {
+    let mainObjectFiles;
+    let mainObjectTextures;
+    let container;
+    let camera, scene, renderer;
+    let cameraControls;
+    let raycaster;
+    let mouse = new THREE.Vector2(), INTERSECTED;
 
-    const $mainTexturePicker = $('#texture-picker-input')
-    mainObjectTextures = $mainTexturePicker[0].files;
+    let windowHalfX = window.innerWidth / 2;
+    let windowHalfY = window.innerHeight / 2;
 
-    if (mainObjectFiles.length > 0 && mainObjectTextures.length > 0 || true) {
-        init();
-        animate();
-    }
-}
+    let object;
+    let helmet;
 
-let mainObjectFiles;
-let mainObjectTextures;
-let container;
-let camera, scene, renderer;
+    init();
+    animate();
+    
 
-let mouseX = 0, mouseY = 0;
+    function init() {
 
-let windowHalfX = window.innerWidth / 2;
-let windowHalfY = window.innerHeight / 2;
+        container = document.createElement('div');
+        document.body.appendChild(container);
 
-let object;
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+        camera.position.z = 250;
 
-function init() {
+        // scene
 
-    container = document.createElement('div');
-    document.body.appendChild(container);
+        scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
-    camera.position.z = 250;
+        var ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
+        scene.add(ambientLight);
 
-    // scene
+        // var pointLight = new THREE.PointLight(0xffffff, 0.8);
+        // camera.add(pointLight);
 
-    scene = new THREE.Scene();
+        let light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1, 1, 1).normalize();
+        scene.add(light);
 
-    var ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
-    scene.add(ambientLight);
+        scene.add(camera);
 
-    var pointLight = new THREE.PointLight(0xffffff, 0.8);
-    camera.add(pointLight);
-    scene.add(camera);
+        // manager
+        function loadModel() {
 
-    // manager
-    function loadModel() {
+            object.traverse(function (child) {
 
-        object.traverse(function (child) {
+                if (child.isMesh) child.material.map = texture;
 
-            if (child.isMesh) child.material.map = texture;
+            });
 
-        });
-
-        object.position.y = - 95;
-        scene.add(object);
-
-    }
-
-    var manager = new THREE.LoadingManager(loadModel);
-
-    manager.onProgress = function (item, loaded, total) {
-
-        console.log(item, loaded, total);
-
-    };
-
-    // texture
-
-    var textureLoader = new THREE.TextureLoader(manager);
-
-    var texture = textureLoader.load('./resources/textures/UV_Grid_Sm.jpg');
-
-    // model
-
-    function onProgress(xhr) {
-
-        if (xhr.lengthComputable) {
-
-            var percentComplete = xhr.loaded / xhr.total * 100;
-            console.log('model ' + Math.round(percentComplete, 2) + '% downloaded');
+            object.position.y = - 95;
+            scene.add(object);
 
         }
 
+        var manager = new THREE.LoadingManager(loadModel);
+
+        manager.onProgress = function (item, loaded, total) {
+
+            console.log(item, loaded, total);
+
+        };
+
+        // texture
+        var textureLoader = new THREE.TextureLoader(manager);
+
+        var texture = textureLoader.load('./resources/textures/UV_Grid_Sm.jpg');
+        var helmetTexture = textureLoader.load('./resources/textures/helmet.jpg');
+
+        // model
+        function onProgress(xhr) {
+
+            if (xhr.lengthComputable) {
+
+                var percentComplete = xhr.loaded / xhr.total * 100;
+                console.log('model ' + Math.round(percentComplete, 2) + '% downloaded');
+
+            }
+
+        }
+
+        function onError() { }
+
+        var loader = new THREE.OBJLoader(manager);
+
+        loader.load('./resources/models/male02.obj', function (obj) {
+
+            object = obj;
+
+        }, onProgress, onError);
+
+        var helmetLoader = new THREE.OBJLoader(manager);
+        helmetLoader.load('./resources/models/helmet123.obj', function (obj) {
+            helmet = obj;
+            helmet.position.y += 60;
+            helmet.position.x += 2;
+            helmet.rotation.x -= Math.PI/2;
+            helmet.rotation.z += Math.PI/2;
+
+            helmet.traverse(function (child) {
+
+                if (child.isMesh) child.material.map = helmetTexture;
+
+            });
+            
+            scene.add(helmet);
+        }, onProgress, onError);
+
+        //
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
+        cameraControls.addEventListener('change', render)
+
+        raycaster = new THREE.Raycaster();
+
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+        window.addEventListener('resize', onWindowResize, false);
+
     }
 
-    function onError() { }
+    function onDocumentMouseMove(event) {
+        event.preventDefault();
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    }
 
-    var loader = new THREE.OBJLoader(manager);
+    function onWindowResize() {
+        windowHalfX = window.innerWidth / 2;
+        windowHalfY = window.innerHeight / 2;
 
-    loader.load('./resources/models/male02.obj', function (obj) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
 
-        object = obj;
-
-    }, onProgress, onError);
-
-    //
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
-
-    document.addEventListener('mousemove', onDocumentMouseMove, false);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 
     //
 
-    window.addEventListener('resize', onWindowResize, false);
+    function animate() {
+        requestAnimationFrame(animate);
+        render();
+    }
 
-}
+    function render() {
+        raycaster.setFromCamera(mouse, camera);
 
-function onWindowResize() {
+        var intersects = raycaster.intersectObjects(scene.children, true);
 
-    windowHalfX = window.innerWidth / 2;
-    windowHalfY = window.innerHeight / 2;
+        if (intersects.length > 0) {
 
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+            if (INTERSECTED != intersects[0].object) {
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
+                if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
-}
+                INTERSECTED = intersects[0].object;
+                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                INTERSECTED.material.emissive.setHex(0xff0000);
 
-function onDocumentMouseMove(event) {
+                console.log(INTERSECTED.name)
+            }
 
-    mouseX = (event.clientX - windowHalfX) / 2;
-    mouseY = (event.clientY - windowHalfY) / 2;
+        } else {
 
-}
+            if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
-//
+            INTERSECTED = null;
+        }
 
-function animate() {
-
-    requestAnimationFrame(animate);
-    render();
-
-}
-
-function render() {
-
-    camera.position.x += (mouseX - camera.position.x) * .05;
-    camera.position.y += (- mouseY - camera.position.y) * .05;
-
-    camera.lookAt(scene.position);
-
-    renderer.render(scene, camera);
-
-}
+        camera.lookAt(scene.position);
+        renderer.render(scene, camera);
+    }
+})
