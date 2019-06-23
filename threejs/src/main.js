@@ -68,7 +68,7 @@ function init() {
 
     var textureLoader = new THREE.TextureLoader(manager);
 
-    var texture = textureLoader.load('../textures/UV_Grid_sm.jpg');
+    var texture = textureLoader.load('../resources/textures/UV_Grid_sm.jpg');
 
     // model
 
@@ -87,7 +87,7 @@ function init() {
 
     var loader = new THREE.OBJLoader(manager);
 
-    loader.load('../models/male02.obj', function (obj) {
+    loader.load('../resources/models/male02.obj', function (obj) {
 
         object = obj;
 
