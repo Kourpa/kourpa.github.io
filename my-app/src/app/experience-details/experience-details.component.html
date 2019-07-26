@@ -1,0 +1,25 @@
+<div class='experience-item'>
+  <div class='experience-item_inner'>
+    <div class='experience-item_timeline'>
+      <span class='experience-item_timeframe'>
+        {{experience.timeframe}}
+      </span>
+    </div>
+    <div class='experience-item_details-container'>
+      <div class='experience-item_details'>
+        <div class='experience-item_company'>{{experience.company}}</div>
+        <div class='experience-item_title'>{{[experience.title]}}</div>
+        <div class='experience-item_description'>{{experience.description}}</div>
+        <ul class='experience-item_bullets'>
+          <li class='experience-item_bullet' *ngFor="let bullet of experience.bullets">{{bullet}}</li>
+        </ul>
+        <ul class='experience-item_technologies'>
+          <li class='experience-item_technology' *ngFor="let tech of experience.technologies">{{tech}}</li>
+        </ul>
+      </div>
+      <div class='experience-item_detials-image'>
+      </div>
+      <hr class='experience-item_divider' *ngIf="!isLast"/>
+    </div>
+  </div>
+</div>
