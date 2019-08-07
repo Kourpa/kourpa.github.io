@@ -1,4 +1,4 @@
-/**
+/*
  * @author Eberhard Graether / http://egraether.com/
  * @author Mark Lundin 	/ http://mark-lundin.com
  * @author Simone Manini / http://daron1337.github.io
@@ -11,7 +11,7 @@ import {
 	Quaternion,
 	Vector2,
 	Vector3
-} from "/build/three.module.js";
+} from "/lib/three.module.js";
 
 var TrackballControls = function ( object, domElement ) {
 
