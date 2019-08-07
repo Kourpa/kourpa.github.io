@@ -53,6 +53,7 @@
 			import { TrackballControls } from "./jsm/controls/TrackballControls.js";
 
 			import { MTLLoader } from "./jsm/loaders/MTLLoader.js";
+			import { TDSLoader } from './jsm/loaders/TDSLoader.js';
 			import { OBJLoader2 } from "./jsm/loaders/OBJLoader2.js";
 			import { MtlObjBridge } from "./jsm/loaders/obj2/bridge/MtlObjBridge.js";
 
@@ -118,20 +119,57 @@
 					let scope = this;
 					let objLoader2 = new OBJLoader2();
 					let callbackOnLoad = function ( object3d ) {
-						object3d.position.z += 2500;
-						object3d.position.y += 150;
+						// object3d.position.z += 2500;
+						// object3d.position.y += 150;
 						scope.scene.add( object3d );
 						scope._reportProgress( { detail: { text: '' } } );
 					};
 
+					//millenium-falcon
+					// let onLoadMtl = function ( mtlParseResult ) {
+					// 	mtlParseResult.preload();
+					// 	objLoader2.setModelName( modelName );
+					// 	objLoader2.setLogging( true, true );
+					// 	objLoader2.addMaterials( MtlObjBridge.addMaterialsFromMtlLoader( mtlParseResult ) );
+					// 	objLoader2.load( 'models/obj/falcon/millenium-falcon.obj', callbackOnLoad, null, null, null );
+					// };
+					// let mtlLoader = new MTLLoader();
+					// mtlLoader.load( 'models/obj/falcon/millenium-falcon.mtl', onLoadMtl );
+
+					//millenium falcon 3ds
+					// var tdsLoader = new TDSLoader();
+					// tdsLoader.load( 'models/obj/falcon/millenium-falcon.3DS', function(object){
+					// 	object.rotation.x = Math.PI / 2;
+					// 	object.rotation.z = Math.PI;
+					// 	object.rotation.y = Math.PI;
+
+					// 	object.position.z += 2500;
+					// 	object.position.y += 150;
+					// 	scope.scene.add(object)
+					// });
+
+					//death star
 					let onLoadMtl = function ( mtlParseResult ) {
+						mtlParseResult.preload();
 						objLoader2.setModelName( modelName );
 						objLoader2.setLogging( true, true );
 						objLoader2.addMaterials( MtlObjBridge.addMaterialsFromMtlLoader( mtlParseResult ) );
-						objLoader2.load( 'models/obj/falcon/millenium-falcon.obj', callbackOnLoad, null, null, null );
+						objLoader2.load( 'models/obj/deathstar/death-star-II.obj', callbackOnLoad, null, null, null );
 					};
 					let mtlLoader = new MTLLoader();
-					mtlLoader.load( 'models/obj/falcon/millenium-falcon.mtl', onLoadMtl );
+					mtlLoader.load( 'models/obj/deathstar/death-star-II.mtl', onLoadMtl );
+
+					//millenium falcon 3ds
+					// var tdsLoader = new TDSLoader();
+					// tdsLoader.load( 'models/obj/falcon/millenium-falcon.3DS', function(object){
+					// 	object.rotation.x = Math.PI / 2;
+					// 	object.rotation.z = Math.PI;
+					// 	object.rotation.y = Math.PI;
+
+					// 	object.position.z += 2500;
+					// 	object.position.y += 150;
+					// 	scope.scene.add(object)
+					// });
 				},
 
 				_reportProgress: function ( event ) {
