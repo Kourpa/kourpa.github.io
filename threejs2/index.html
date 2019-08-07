@@ -48,7 +48,7 @@
 
 			'use strict';
 
-			import * as THREE from '/lib/three.module.js';
+			import * as THREE from '/build/three.module.js';
 
 			import { TrackballControls } from "./jsm/controls/TrackballControls.js";
 
@@ -142,7 +142,6 @@
 
 					}
 					console.log( 'Progress: ' + output );
-					document.getElementById( 'feedback' ).innerHTML = output;
 				},
 
 				resizeDisplayGL: function () {
