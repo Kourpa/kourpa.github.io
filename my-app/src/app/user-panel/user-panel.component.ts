@@ -10,5 +10,5 @@ import { ViewEncapsulation } from '@angular/core';
 export class UserPanelComponent {
   name = 'Marcos Lemus';
   title = 'Software Engineer';
-  description = 'I do some stuff I do some stuff I do some stuff I do some stuff I do ';
+  description = 'I am a Full Stack Web Developer with a diverse knowledge of software development technologies and concepts. I excel when faced with a challenging problem and seek out learning opportunities whenever possible.';
 }
