@@ -6,6 +6,7 @@ import { UserPanelComponent } from './user-panel/user-panel.component';
 import { PortfolioComponent } from './portfolio/portfolio.component';
 import {MaterialModule} from '../material-module';
 import {ExperienceDetailsComponent} from './experience-details/experience-details.component';
+import { ToysComponent } from './toys/toys.component';
 
 @NgModule({
    declarations: [
@@ -13,6 +14,7 @@ import {ExperienceDetailsComponent} from './experience-details/experience-detail
       UserPanelComponent,
       PortfolioComponent,
       ExperienceDetailsComponent,
+      ToysComponent
    ],
    imports: [
       BrowserModule,

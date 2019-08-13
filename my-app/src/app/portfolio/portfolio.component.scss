@@ -16,7 +16,7 @@ html {
 }
 
 .site-main {
-    margin-left: 250px;
+    margin-left: 300px;
     background-color: $background-color;
     color: #444;
 }
@@ -35,8 +35,8 @@ html {
     right: auto;
     content: " ";
     display: block;
-    width: 250px;
-    background-size: cover
+    width: 300px;
+    background-size: cover;
 }
 
 @media screen and (max-width: 1023px) {
@@ -61,6 +61,11 @@ html {
     position: relative
 }
 
-.portfolio-section {
+.main-section {
     margin: 20px;
+}
+
+.toys-container {
+
+  text-align: center;
 }

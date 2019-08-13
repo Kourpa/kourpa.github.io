@@ -1,8 +1,12 @@
 <div class='site-main portfolio'>
     <div class='main-section portfolio-section'>
-        <div class='section-header'>Experience</div>
-        <app-experience-details *ngFor="let ex of experiences ; last as isLast" [experience]="ex" [isLast]="isLast"></app-experience-details>
+      <div class='section-header'>Experience</div>
+      <app-experience-details *ngFor="let ex of experiences ; last as isLast" [experience]="ex" [isLast]="isLast"></app-experience-details>
     </div>
-    <h3>Toy Projects</h3>
-    <h3>Technologies</h3>
+    <div class='main-section toys-section'>
+      <div class='section-header'>Toy Projects</div>
+      <div class='toys-container'>
+        <app-toys *ngFor="let toy of toys;" [toy]="toy"></app-toys>
+      </div>
+    </div>
 </div>

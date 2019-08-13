@@ -1,4 +1,5 @@
 import { EXPERIENCES } from './../experience';
+import { TOYS } from './../toys';
 import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
@@ -9,4 +10,5 @@ import { Component, ViewEncapsulation } from '@angular/core';
 })
 export class PortfolioComponent {
   experiences = EXPERIENCES;
+  toys = TOYS;
 }
