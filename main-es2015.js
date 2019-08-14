@@ -63,7 +63,7 @@ module.exports = "<div class='site-main portfolio'>\n    <div class='main-sectio
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class='toy-container'>\n  <div class='toy-image-container'>\n    <img class='toy-image' src='{{toy.img}}'/>\n  </div>\n  <br />\n  <div class='toy-description-container'>\n    <div>{{toy.description}}</div>\n  </div>\n</div>\n"
+module.exports = "<div class='toy-container'>\n  <a href='{{toy.url}}'></a>\n  <div class='toy-image-container'>\n    <img class='toy-image' src='{{toy.img}}'/>\n  </div>\n  <br />\n  <div class='toy-description-container'>\n    <div>{{toy.description}}</div>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -370,10 +370,12 @@ class Toy {
 const TOYS = [
     {
         img: 'assets/img/wordCloud.png',
+        url: 'http://kourpa.github.io/wordCloud/index.html',
         description: 'A simple application that uses D3 to represent a word cloud'
     },
     {
         img: 'assets/img/threejs.png',
+        url: 'http://kourpa.github.io/threejs2/index.html',
         description: 'Introduction to threejs'
     }
 ];
