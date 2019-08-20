@@ -1,5 +1,6 @@
 import * as THREE from '/lib/three.module.js';
 import { TrackballControls } from "./lib/controls/TrackballControls.js";
+import { OrbitControls } from "./lib/controls/OrbitControls.js";
 import Loader from "./Loader.js";
 
 export default class Scene {
@@ -25,9 +26,9 @@ export default class Scene {
         this.cameraDefaults = {
             posCamera: new THREE.Vector3(0.0, 175.0, 500.0),
             posCameraTarget: new THREE.Vector3(0, 0, 0),
-            near: 0.1,
+            near: .1,
             far: 10000, 
-            fov: 45
+            fov: 60
         };
 
         this.camera = null;
@@ -37,23 +38,30 @@ export default class Scene {
         this.controls = null;
         this.raycaster = new THREE.Raycaster();
 
-        this.canvas.addEventListener('click', function(event){
-            const parentTop = this.canvas.offsetTop;
-            const parentLeft = this.canvas.offsetLeft;
-            const parentWidth = this.canvas.offsetWidth;
-            const parentHeight = this.canvas.offsetHeight;
-
-            this.mouse.x = ((event.clientX - parentLeft) / parentWidth) * 2 - 1;
-            this.mouse.y = -((event.clientY - parentTop) / parentHeight) * 2 + 1;
-
-            const intersectObject = this.raycast();
-            this.click(intersectObject);
-        });
-
-        
         this.initGL();
+        this.initializeControls();
         this.resizeDisplayGL();
         this.animate();
+
+        let helper = new THREE.GridHelper(1200, 60, 0xFF4444, 0x404040);
+        this.scene.add(helper);
+        
+
+        var geometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
+        var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
+        object.position.x = 0;
+        object.position.y = 100;
+        object.position.z = 100;
+        object.rotation.x = Math.random() * 2 * Math.PI;
+        object.rotation.y = Math.random() * 2 * Math.PI;
+        object.rotation.z = Math.random() * 2 * Math.PI;
+        object.scale.x = Math.random() + 0.5;
+        object.scale.y = Math.random() + 0.5;
+        object.scale.z = Math.random() + 0.5;
+        this.camera.add(object)
+        object.position.set(0, 0, -100);
+
+        this.scene.add(this.camera);
     }
 
     initGL(){
@@ -66,11 +74,39 @@ export default class Scene {
         
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(this.cameraDefaults.fov, this.aspectRatio, this.cameraDefaults.near, this.cameraDefaults.far);
-        this.controls = new TrackballControls(this.camera, this.renderer.domElement);
+        this.resetCamera();
 
         this.initializeLighting(this.scene);
         this.loader = new Loader(this.scene);
+
+        const self = this;
+        this.canvas.addEventListener('click', function(event){
+            const parentTop = self.canvas.offsetTop;
+            const parentLeft = self.canvas.offsetLeft;
+            const parentWidth = self.canvas.offsetWidth;
+            const parentHeight = self.canvas.offsetHeight;
+
+            self.mouse.x = ((event.clientX - parentLeft) / parentWidth) * 2 - 1;
+            self.mouse.y = -((event.clientY - parentTop) / parentHeight) * 2 + 1;
+
+            const intersectObject = self.raycast();
+            self.click(intersectObject);
+        });
+
+        window.addEventListener('resize', function(){
+            self.resizeDisplayGL();
+        }, false);
     };
+
+    initializeControls() {
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.05;
+        this.controls.screenSpacePanning = false;
+        this.controls.minDistance = 100;
+        this.controls.maxDistance = 500;
+        this.controls.maxPolarAngle = Math.PI / 2;
+    }
 
     initializeLighting(scene){
         let ambientLight = new THREE.AmbientLight(0x404040);
@@ -86,7 +122,7 @@ export default class Scene {
     };
 
     resizeDisplayGL(){
-        this.controls.handleResize();
+        //this.controls.handleResize();
         this.recalcAspectRatio();
         this.renderer.setSize(this.canvas.offsetWidth, this.canvas.offsetHeight, false);
         this.updateCamera();
@@ -109,9 +145,9 @@ export default class Scene {
     };
 
     raycast(){
-        this.raycaster.setFromCamera(mouse, this.camera);
+        this.raycaster.setFromCamera(this.mouse, this.camera);
         
-        const intersects = this.raycaster.intersectObjects(scene.children, true);
+        const intersects = this.raycaster.intersectObjects(this.scene.children, true);
         if(intersects.length > 0){
             return intersects[0].object;
         }
@@ -124,14 +160,17 @@ export default class Scene {
             this.renderer.clear();
         }
 
-        this.controls.update();
         this.update();
+        this.controls.update();
         this.renderer.render(this.scene, this.camera);
     }
 
-    //TODO: This doesn't work! Gah!
-    animate = function(){
-        requestAnimationFrame(this.animate);
-        render();
+    animate(){
+        const self = this;
+
+        requestAnimationFrame(function(){
+            self.animate();
+        });
+        self.render();
     };
 }
