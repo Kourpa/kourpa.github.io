@@ -24,7 +24,7 @@ export default class Scene {
 
         this.scene = null;
         this.cameraDefaults = {
-            posCamera: new THREE.Vector3(0.0, 175.0, 500.0),
+            posCamera: new THREE.Vector3(0.0, 0.0, 500.0),
             posCameraTarget: new THREE.Vector3(0, 0, 0),
             near: .1,
             far: 10000, 
@@ -39,29 +39,14 @@ export default class Scene {
         this.raycaster = new THREE.Raycaster();
 
         this.initGL();
-        this.initializeControls();
         this.resizeDisplayGL();
         this.animate();
 
         let helper = new THREE.GridHelper(1200, 60, 0xFF4444, 0x404040);
+        helper.rotation.x = Math.PI / 2;
         this.scene.add(helper);
-        
 
-        var geometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
-        var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
-        object.position.x = 0;
-        object.position.y = 100;
-        object.position.z = 100;
-        object.rotation.x = Math.random() * 2 * Math.PI;
-        object.rotation.y = Math.random() * 2 * Math.PI;
-        object.rotation.z = Math.random() * 2 * Math.PI;
-        object.scale.x = Math.random() + 0.5;
-        object.scale.y = Math.random() + 0.5;
-        object.scale.z = Math.random() + 0.5;
-        this.camera.add(object)
-        object.position.set(0, 0, -100);
-
-        this.scene.add(this.camera);
+        this.initObjects();
     }
 
     initGL(){
@@ -98,14 +83,68 @@ export default class Scene {
         }, false);
     };
 
-    initializeControls() {
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.enableDamping = true;
-        this.controls.dampingFactor = 0.05;
-        this.controls.screenSpacePanning = false;
-        this.controls.minDistance = 100;
-        this.controls.maxDistance = 500;
-        this.controls.maxPolarAngle = Math.PI / 2;
+    initObjects(){
+        let circleRadius = 150;
+        let size = 40;
+
+        var geometry = new THREE.BoxBufferGeometry( size, size, size );
+        var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0x00ff00 } ) );
+        object.position.set(0, 0, 0);
+        this.scene.add(object);
+        this.initializeControls(object);
+
+        const positions = [];
+        for(let i = 0; i < 360 && false; i+=size/2){
+            var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
+            let x = circleRadius * Math.cos(Math.PI / 180 * i);
+            let y = circleRadius * Math.sin(Math.PI / 180 * i);
+            object.position.set(x, y, 0);
+            object.lookAt(this.camera.position);
+            object.rotation.z = 0;
+            object.scale.set(.9, .9, .9);
+            positions.push(object.position);
+            this.scene.add(object);
+        }
+
+
+        let circumfrence = Math.PI * circleRadius;
+        let numberOfSquares = Math.floor(circumfrence / (size / 2));
+        for(let i =  0; i < numberOfSquares; i++){
+            var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
+            let x = circleRadius * Math.cos(2 * Math.PI * i / numberOfSquares);
+            let y = circleRadius * Math.sin(2 * Math.PI * i / numberOfSquares);
+            object.position.set(x, y, 0);
+            object.lookAt(this.camera.position);
+            object.rotation.z = 0;
+            object.scale.set(.8, .8, .8);
+            positions.push(object.position);
+            this.scene.add(object);
+        }
+
+        let r2 = circleRadius + (size + size / 32);
+        let circumfrence2 = Math.PI * (r2);
+        let numberOfSquares2 = Math.floor(circumfrence2 / (size / 2));
+        for(let i =  0; i < numberOfSquares2; i++){
+            var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
+            let x = r2 * Math.cos(2 * Math.PI * i / numberOfSquares2);
+            let y = r2 * Math.sin(2 * Math.PI * i / numberOfSquares2);
+            object.position.set(x, y, 0);
+            object.lookAt(this.camera.position);
+            object.rotation.z = 0;
+            object.scale.set(.8, .8, .8);
+            positions.push(object.position);
+            this.scene.add(object);
+        }
+
+    }
+
+    initializeControls(object) {
+        this.controls = new ObjectControls(this.camera, this.renderer.domElement, object);
+        this.controls.setScaleLimits(1, 10);
+        this.controls.setScaleSpeed(.15);
+        this.controls.enableVerticalRotation();
+        this.controls.setMaxVerticalRotationAngle(Math.PI / 4, Math.PI / 4);
+        this.controls.setRotationSpeed(0.075);
     }
 
     initializeLighting(scene){
@@ -161,7 +200,7 @@ export default class Scene {
         }
 
         this.update();
-        this.controls.update();
+        // this.controls.update();
         this.renderer.render(this.scene, this.camera);
     }
 
