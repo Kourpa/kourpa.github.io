@@ -146,12 +146,12 @@ ObjectControls = function(camera, domElement, objectToMove) {
     /***************************** shared functions **********************/
   
     function zoomIn() {
-      scale -= zoomSpeed;
+      scale *= 1 - zoomSpeed;
       mesh.scale.set(scale, scale, scale);
     }
   
     function zoomOut() {
-      scale += zoomSpeed;
+      scale *= 1 + zoomSpeed;
       mesh.scale.set(scale, scale, scale);
     }
   

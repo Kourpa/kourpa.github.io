@@ -36,6 +36,7 @@ export default class Scene {
 
         this.mouse = new THREE.Vector2();
         this.controls = null;
+        this.mainModel = null;
         this.raycaster = new THREE.Raycaster();
 
         this.initGL();
@@ -55,7 +56,7 @@ export default class Scene {
             antialias: true,
             autoClear: true
         });
-        this.renderer.setClearColor(0x050505);
+        this.renderer.setClearColor(0x656565);
         
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(this.cameraDefaults.fov, this.aspectRatio, this.cameraDefaults.near, this.cameraDefaults.far);
@@ -84,14 +85,25 @@ export default class Scene {
     };
 
     initObjects(){
-        let circleRadius = 150;
-        let size = 40;
+        let circleRadius = 160;
+        let size = 80;
+        let self = this;
+
+        // this.loader.loadOBJ('falcon', 
+        //     '/threejs2/models/obj/f16/F16C_US_LOD1_v25.obj', 
+        //     '/threejs2/models/obj/f16/F16C_US_LOD1_v25.mtl',
+        //     function(object){
+        //         self.updateMainModel(object);
+        //     });
+        // let model = this.loader.loadGLFT('/threejs2/models/obj/space/space.glb', function(object){
+        //     self.initializeControls(object);
+        // })
 
         var geometry = new THREE.BoxBufferGeometry( size, size, size );
-        var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0x00ff00 } ) );
-        object.position.set(0, 0, 0);
-        this.scene.add(object);
-        this.initializeControls(object);
+        // var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0x00ff00 } ) );
+        // object.position.set(0, 0, 0);
+        // this.scene.add(object);
+        // this.initializeControls(object);
 
         const positions = [];
         for(let i = 0; i < 360 && false; i+=size/2){
@@ -114,8 +126,8 @@ export default class Scene {
             let x = circleRadius * Math.cos(2 * Math.PI * i / numberOfSquares);
             let y = circleRadius * Math.sin(2 * Math.PI * i / numberOfSquares);
             object.position.set(x, y, 0);
-            object.lookAt(this.camera.position);
-            object.rotation.z = 0;
+            // object.lookAt(this.camera.position);
+            // object.rotation.z = 0;
             object.scale.set(.8, .8, .8);
             positions.push(object.position);
             this.scene.add(object);
@@ -128,9 +140,10 @@ export default class Scene {
             var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
             let x = r2 * Math.cos(2 * Math.PI * i / numberOfSquares2);
             let y = r2 * Math.sin(2 * Math.PI * i / numberOfSquares2);
-            object.position.set(x, y, 0);
-            object.lookAt(this.camera.position);
-            object.rotation.z = 0;
+            let z = -size/2;
+            object.position.set(x, y, z);
+            //object.lookAt(this.camera.position);
+            //object.rotation.z = 0;
             object.scale.set(.8, .8, .8);
             positions.push(object.position);
             this.scene.add(object);
@@ -139,16 +152,32 @@ export default class Scene {
     }
 
     initializeControls(object) {
-        this.controls = new ObjectControls(this.camera, this.renderer.domElement, object);
-        this.controls.setScaleLimits(1, 10);
-        this.controls.setScaleSpeed(.15);
+        if(!this.controls){
+            this.controls = new ObjectControls(this.camera, this.renderer.domElement, object);
+        }
+        else {
+            this.controls.setObjectToMove(object);
+        }
+
+        this.controls.setScaleLimits(0, 100);
+        this.controls.setScaleSpeed(.1);
         this.controls.enableVerticalRotation();
         this.controls.setMaxVerticalRotationAngle(Math.PI / 4, Math.PI / 4);
         this.controls.setRotationSpeed(0.075);
     }
 
+    updateMainModel(object){
+        if(this.mainModel){
+            this.scene.remove(this.mainModel);
+            this.animate();
+        }
+
+        this.mainModel = object;
+        this.initializeControls(this.mainModel);
+    }
+
     initializeLighting(scene){
-        let ambientLight = new THREE.AmbientLight(0x404040);
+        let ambientLight = new THREE.AmbientLight(0xa0a0a0);
         let directionalLight1 = new THREE.DirectionalLight(0xC0C090);
         let directionalLight2 = new THREE.DirectionalLight(0xC0C090);
 
@@ -212,4 +241,21 @@ export default class Scene {
         });
         self.render();
     };
+
+    loadModel(options){
+        const self = this;
+        if(!options.type){
+            console.log('Please provide a type of a file')
+        }
+        else if(options.type === 'obj'){
+            this.loader.loadOBJ(options.name, options.objPath, options.mltPath, function(object) {
+                self.updateMainModel(object);
+            });
+        }
+        else if(options.type === 'gltf'){
+            this.loader.loadGLTF(options.gltfPath, function(object) {
+                self.updateMainModel(object);
+            });
+        }
+    }
 }
