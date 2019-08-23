@@ -86,7 +86,7 @@ export default class Scene {
 
     initObjects(){
         let circleRadius = 160;
-        let size = 40;
+        let size = 60;
         let self = this;
 
         // this.loader.loadOBJ('falcon', 
@@ -99,7 +99,7 @@ export default class Scene {
         //     self.initializeControls(object);
         // })
 
-        var geometry = new THREE.BoxBufferGeometry( size, size, size );
+        var geometry = new THREE.BoxBufferGeometry( size, size/2, size/32 );
         // var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0x00ff00 } ) );
         // object.position.set(0, 0, 0);
         // this.scene.add(object);
@@ -126,12 +126,12 @@ export default class Scene {
             for(let j = 0; j < i * 2 - 1; j++){
                 const yy = y + i * size;
                 const xx = x + j * size - yy;
-                const zz = -i * size/2 + (size/2 * 4);
+                const zz = -i * size/2 + (size/2 * 2);
 
-                createStupidObject(xx, yy, zz, 0xaa0000);
-                createStupidObject(xx, -yy, zz, 0x00aa00);
-                createStupidObject(-yy, -xx, zz, 0x0000aa);
-                createStupidObject(yy, -xx, zz, 0x00aaaa);
+                createStupidObject(xx, yy - (i * size / 2), zz, 0xaa0000);
+                createStupidObject(xx, -yy + (i * size / 2), zz, 0x00aa00);
+                createStupidObject(-yy, -xx + (j * size / 2) - ((i - 1) * size / 2), zz, 0x0000aa);
+                createStupidObject(yy, -xx  + (j * size / 2) - ((i - 1) * size / 2), zz, 0x00aaaa);
             }
         }
 
