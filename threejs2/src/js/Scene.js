@@ -43,9 +43,9 @@ export default class Scene {
         this.resizeDisplayGL();
         this.animate();
 
-        let helper = new THREE.GridHelper(1200, 60, 0xFF4444, 0x404040);
-        helper.rotation.x = Math.PI / 2;
-        this.scene.add(helper);
+        // let helper = new THREE.GridHelper(1200, 60, 0xFF4444, 0x404040);
+        // helper.rotation.x = Math.PI / 2;
+        // this.scene.add(helper);
 
         this.initObjects();
     }
@@ -86,7 +86,7 @@ export default class Scene {
 
     initObjects(){
         let circleRadius = 160;
-        let size = 80;
+        let size = 40;
         let self = this;
 
         // this.loader.loadOBJ('falcon', 
@@ -105,49 +105,90 @@ export default class Scene {
         // this.scene.add(object);
         // this.initializeControls(object);
 
-        const positions = [];
-        for(let i = 0; i < 360 && false; i+=size/2){
-            var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
-            let x = circleRadius * Math.cos(Math.PI / 180 * i);
-            let y = circleRadius * Math.sin(Math.PI / 180 * i);
-            object.position.set(x, y, 0);
-            object.lookAt(this.camera.position);
-            object.rotation.z = 0;
-            object.scale.set(.9, .9, .9);
-            positions.push(object.position);
-            this.scene.add(object);
+        // let squareDistance = size * 5;
+        // for(let i = -5; i <= 5; i++){
+        //     for(let j = 0; j < 4; j++){
+        //         let z = j * size;
+        //         createStupidObject(squareDistance + size * j, i * size, z)
+        //         createStupidObject(-squareDistance - size * j, i * size, z)
+        //         createStupidObject(i * size, squareDistance + size * j, z)
+        //         createStupidObject(i * size, -squareDistance - size * j, z)
+        //     }
+        // }
+
+        let n = 8;
+        let x = size;
+        let y = 0;
+        let z = 0;
+        let cubeSize = 100;
+
+        for(let i = 4; i < n; i++){
+            for(let j = 0; j < i * 2 - 1; j++){
+                const yy = y + i * size;
+                const xx = x + j * size - yy;
+                const zz = -i * size/2 + (size/2 * 4);
+
+                createStupidObject(xx, yy, zz, 0xaa0000);
+                createStupidObject(xx, -yy, zz, 0x00aa00);
+                createStupidObject(-yy, -xx, zz, 0x0000aa);
+                createStupidObject(yy, -xx, zz, 0x00aaaa);
+            }
         }
 
-
-        let circumfrence = Math.PI * circleRadius;
-        let numberOfSquares = Math.floor(circumfrence / (size / 2));
-        for(let i =  0; i < numberOfSquares; i++){
-            var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
-            let x = circleRadius * Math.cos(2 * Math.PI * i / numberOfSquares);
-            let y = circleRadius * Math.sin(2 * Math.PI * i / numberOfSquares);
-            object.position.set(x, y, 0);
-            // object.lookAt(this.camera.position);
-            // object.rotation.z = 0;
-            object.scale.set(.8, .8, .8);
-            positions.push(object.position);
-            this.scene.add(object);
-        }
-
-        let r2 = circleRadius + (size + size / 32);
-        let circumfrence2 = Math.PI * (r2);
-        let numberOfSquares2 = Math.floor(circumfrence2 / (size / 2));
-        for(let i =  0; i < numberOfSquares2; i++){
-            var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
-            let x = r2 * Math.cos(2 * Math.PI * i / numberOfSquares2);
-            let y = r2 * Math.sin(2 * Math.PI * i / numberOfSquares2);
-            let z = -size/2;
+        function createStupidObject(x, y, z, color){
+            var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  color } ) );
             object.position.set(x, y, z);
-            //object.lookAt(this.camera.position);
-            //object.rotation.z = 0;
-            object.scale.set(.8, .8, .8);
-            positions.push(object.position);
-            this.scene.add(object);
+            // object.lookAt(self.camera.position);
+
+            // object.rotation.z = 0;
+            // object.rotation.y = 0;
+            object.scale.set(.9, .9, .9);
+            self.scene.add(object);
+
+            let geo = new THREE.EdgesGeometry(object.geometry);
+            let mesh = new THREE.LineBasicMaterial({color: 0xffffff, linewidth: 4});
+            let wireframe = new THREE.LineSegments(geo, mesh);
+            wireframe.renderOrder = 1;
+            
+            object.add(wireframe)
         }
+        // let circumfrence = Math.PI * circleRadius;
+        // let numberOfSquares = Math.floor(circumfrence / (size / 2));
+        // for(let i =  0; i < numberOfSquares; i++){
+        //     var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
+        //     let x = circleRadius * Math.cos(2 * Math.PI * i / numberOfSquares);
+        //     let y = circleRadius * Math.sin(2 * Math.PI * i / numberOfSquares);
+        //     object.position.set(x, y, 0);
+        //     // object.lookAt(this.camera.position);
+        //     // object.rotation.z = 0;
+        //     object.scale.set(.8, .8, .8);
+        //     positions.push(object.position);
+
+        //     this.scene.add(object);
+
+        //     let geo = new THREE.EdgesGeometry(object.geometry);
+        //     let mesh = new THREE.LineBasicMaterial({color: 0xffffff, linewidth: 4});
+        //     let wireframe = new THREE.LineSegments(geo, mesh);
+        //     wireframe.renderOrder = 1;
+            
+        //     object.add(wireframe)
+        // }
+
+        // let r2 = circleRadius + (size + size / 32);
+        // let circumfrence2 = Math.PI * (r2);
+        // let numberOfSquares2 = Math.floor(circumfrence2 / (size / 2));
+        // for(let i =  0; i < numberOfSquares2; i++){
+        //     var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
+        //     let x = r2 * Math.cos(2 * Math.PI * i / numberOfSquares2);
+        //     let y = r2 * Math.sin(2 * Math.PI * i / numberOfSquares2);
+        //     let z = -size/2;
+        //     object.position.set(x, y, z);
+        //     //object.lookAt(this.camera.position);
+        //     //object.rotation.z = 0;
+        //     object.scale.set(.8, .8, .8);
+        //     positions.push(object.position);
+        //     this.scene.add(object);
+        // }
 
     }
 
