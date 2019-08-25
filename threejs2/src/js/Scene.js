@@ -56,7 +56,7 @@ export default class Scene {
             antialias: true,
             autoClear: true
         });
-        this.renderer.setClearColor(0x656565);
+        this.renderer.setClearColor(0x666666);
         
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(this.cameraDefaults.fov, this.aspectRatio, this.cameraDefaults.near, this.cameraDefaults.far);
