@@ -66,6 +66,7 @@ export default class Scene {
         this.loader = new Loader(this.scene);
 
         const self = this;
+        this.selectedObject = null;
         this.canvas.addEventListener('click', function(event){
             const parentTop = self.canvas.offsetTop;
             const parentLeft = self.canvas.offsetLeft;
@@ -75,8 +76,28 @@ export default class Scene {
             self.mouse.x = ((event.clientX - parentLeft) / parentWidth) * 2 - 1;
             self.mouse.y = -((event.clientY - parentTop) / parentHeight) * 2 + 1;
 
-            const intersectObject = self.raycast();
-            self.click(intersectObject);
+            const intersectedObject = self.raycast();
+
+            if(self.selectedObject){
+                const rootColor = self.selectedObject.material.color.getHex();
+                self.selectedObject.children[0].material.color.setHex(rootColor * .5);
+                self.selectedObject.position.z -= 100;
+                self.selectedObject.position.x *= 1.2 ;
+                self.selectedObject.position.y *= 1.2;
+                self.selectedObject = null;
+            }
+
+            if(intersectedObject && intersectedObject !== self.mainModel){
+                if(intersectedObject.name === 'cube'){
+                    self.selectedObject = intersectedObject;
+                    intersectedObject.children[0].material.color.setHex(0xffffff);
+                    intersectedObject.position.z += 100;
+                    intersectedObject.position.x /= 1.2;
+                    intersectedObject.position.y /= 1.2;
+                }
+            }
+
+            self.click(intersectedObject);
         });
 
         window.addEventListener('resize', function(){
@@ -85,110 +106,81 @@ export default class Scene {
     };
 
     initObjects(){
+        const visibleHeightAtZDepth = ( depth, camera ) => {
+            // compensate for cameras not positioned at z=0
+            const cameraOffset = camera.position.z;
+            if ( depth < cameraOffset ) depth -= cameraOffset;
+            else depth += cameraOffset;
+
+            // vertical fov in radians
+            const vFOV = camera.fov * Math.PI / 180; 
+
+            // Math.abs to ensure the result is always positive
+            return 2 * Math.tan( vFOV / 2 ) * Math.abs( depth );
+        };
+
+        const visibleWidthAtZDepth = ( depth, camera ) => {
+            const height = visibleHeightAtZDepth( depth, camera );
+            return height * camera.aspect;
+        };
+
+
         let circleRadius = 160;
         let size = 60;
         let self = this;
 
-        // this.loader.loadOBJ('falcon', 
-        //     '/threejs2/models/obj/f16/F16C_US_LOD1_v25.obj', 
-        //     '/threejs2/models/obj/f16/F16C_US_LOD1_v25.mtl',
-        //     function(object){
-        //         self.updateMainModel(object);
-        //     });
-        // let model = this.loader.loadGLFT('/threejs2/models/obj/space/space.glb', function(object){
-        //     self.initializeControls(object);
-        // })
-
-        var geometry = new THREE.BoxBufferGeometry( size, size/2, size/32 );
-        // var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0x00ff00 } ) );
-        // object.position.set(0, 0, 0);
-        // this.scene.add(object);
-        // this.initializeControls(object);
-
-        // let squareDistance = size * 5;
-        // for(let i = -5; i <= 5; i++){
-        //     for(let j = 0; j < 4; j++){
-        //         let z = j * size;
-        //         createStupidObject(squareDistance + size * j, i * size, z)
-        //         createStupidObject(-squareDistance - size * j, i * size, z)
-        //         createStupidObject(i * size, squareDistance + size * j, z)
-        //         createStupidObject(i * size, -squareDistance - size * j, z)
-        //     }
-        // }
+        var geometry = new THREE.BoxBufferGeometry( size, size/2, size/64 );
+        let topGroup = new THREE.Group();
+        let bottomGroup = new THREE.Group();
+        let leftGroup = new THREE.Group();
+        let rightGroup = new THREE.Group();
 
         let n = 8;
         let x = size;
         let y = 0;
         let z = 0;
         let cubeSize = 100;
+        let topGroupHeight = 0;
 
-        for(let i = 4; i < n; i++){
+        for(let i = 3; i < n; i++){
             for(let j = 0; j < i * 2 - 1; j++){
                 const yy = y + i * size;
                 const xx = x + j * size - yy;
                 const zz = -i * size/2 + (size/2 * 2);
 
-                createStupidObject(xx, yy - (i * size / 2), zz, 0xaa0000);
-                createStupidObject(xx, -yy + (i * size / 2), zz, 0x00aa00);
-                createStupidObject(-yy, -xx + (j * size / 2) - ((i - 1) * size / 2), zz, 0x0000aa);
-                createStupidObject(yy, -xx  + (j * size / 2) - ((i - 1) * size / 2), zz, 0x00aaaa);
+                const height = visibleHeightAtZDepth(zz, self.camera) - 10;
+                const width = visibleWidthAtZDepth(zz, self.camera) - 10;
+                const posY = size/4 * (n - i);
+                const posX = size/2 * (n - i);
+
+                topGroup.add(createStupidObject(xx, height/2 - posY, zz, 0xaa0000));
+                bottomGroup.add(createStupidObject(xx, -height/2 + posY, zz, 0x00aa00));
+
+                leftGroup.add(createStupidObject(-width/2 + posX, -xx + (j * size / 2) - ((i - 1) * size / 2), zz, 0x0000aa));
+                rightGroup.add(createStupidObject(width/2 - posX, -xx  + (j * size / 2) - ((i - 1) * size / 2), zz, 0x00aaaa));
             }
         }
 
+        self.scene.add(topGroup);
+        self.scene.add(bottomGroup);
+        self.scene.add(leftGroup);
+        self.scene.add(rightGroup);
+
         function createStupidObject(x, y, z, color){
             var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  color } ) );
+            object.name = 'cube'
             object.position.set(x, y, z);
-            // object.lookAt(self.camera.position);
-
-            // object.rotation.z = 0;
-            // object.rotation.y = 0;
             object.scale.set(.9, .9, .9);
-            self.scene.add(object);
 
             let geo = new THREE.EdgesGeometry(object.geometry);
-            let mesh = new THREE.LineBasicMaterial({color: 0xffffff, linewidth: 4});
+            let mesh = new THREE.LineBasicMaterial({color: color * .5, linewidth: 2});
             let wireframe = new THREE.LineSegments(geo, mesh);
+            wireframe.name = 'cube-frame'
             wireframe.renderOrder = 1;
             
             object.add(wireframe)
+            return object;
         }
-        // let circumfrence = Math.PI * circleRadius;
-        // let numberOfSquares = Math.floor(circumfrence / (size / 2));
-        // for(let i =  0; i < numberOfSquares; i++){
-        //     var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
-        //     let x = circleRadius * Math.cos(2 * Math.PI * i / numberOfSquares);
-        //     let y = circleRadius * Math.sin(2 * Math.PI * i / numberOfSquares);
-        //     object.position.set(x, y, 0);
-        //     // object.lookAt(this.camera.position);
-        //     // object.rotation.z = 0;
-        //     object.scale.set(.8, .8, .8);
-        //     positions.push(object.position);
-
-        //     this.scene.add(object);
-
-        //     let geo = new THREE.EdgesGeometry(object.geometry);
-        //     let mesh = new THREE.LineBasicMaterial({color: 0xffffff, linewidth: 4});
-        //     let wireframe = new THREE.LineSegments(geo, mesh);
-        //     wireframe.renderOrder = 1;
-            
-        //     object.add(wireframe)
-        // }
-
-        // let r2 = circleRadius + (size + size / 32);
-        // let circumfrence2 = Math.PI * (r2);
-        // let numberOfSquares2 = Math.floor(circumfrence2 / (size / 2));
-        // for(let i =  0; i < numberOfSquares2; i++){
-        //     var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xff00ff } ) );
-        //     let x = r2 * Math.cos(2 * Math.PI * i / numberOfSquares2);
-        //     let y = r2 * Math.sin(2 * Math.PI * i / numberOfSquares2);
-        //     let z = -size/2;
-        //     object.position.set(x, y, z);
-        //     //object.lookAt(this.camera.position);
-        //     //object.rotation.z = 0;
-        //     object.scale.set(.8, .8, .8);
-        //     positions.push(object.position);
-        //     this.scene.add(object);
-        // }
 
     }
 
@@ -269,6 +261,7 @@ export default class Scene {
             this.renderer.clear();
         }
 
+        TWEEN.update();
         this.update();
         // this.controls.update();
         this.renderer.render(this.scene, this.camera);
