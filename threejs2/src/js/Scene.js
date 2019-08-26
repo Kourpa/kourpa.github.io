@@ -81,9 +81,6 @@ export default class Scene {
             if(self.selectedObject){
                 const rootColor = self.selectedObject.material.color.getHex();
                 self.selectedObject.children[0].material.color.setHex(rootColor * .5);
-                self.selectedObject.position.z -= 100;
-                self.selectedObject.position.x *= 1.2 ;
-                self.selectedObject.position.y *= 1.2;
                 self.selectedObject = null;
             }
 
@@ -91,9 +88,6 @@ export default class Scene {
                 if(intersectedObject.name === 'cube'){
                     self.selectedObject = intersectedObject;
                     intersectedObject.children[0].material.color.setHex(0xffffff);
-                    intersectedObject.position.z += 100;
-                    intersectedObject.position.x /= 1.2;
-                    intersectedObject.position.y /= 1.2;
                 }
             }
 
@@ -135,31 +129,61 @@ export default class Scene {
         let leftGroup = new THREE.Group();
         let rightGroup = new THREE.Group();
 
-        let n = 8;
+        let n = 10;
         let x = size;
         let y = 0;
         let z = 0;
         let cubeSize = 100;
         let topGroupHeight = 0;
 
-        for(let i = 3; i < n; i++){
-            for(let j = 0; j < i * 2 - 1; j++){
-                const yy = y + i * size;
-                const xx = x + j * size - yy;
-                const zz = -i * size/2 + (size/2 * 2);
+        let initialX = (n - 1) * size /2;
+        for(let i = 0; i < n; i++){
+            for(let j = 0; j < 5; j++){
+                let xx = initialX - size * i;
+                let yy = size/1.45 * j;
+                let zz = -size * j * .75;
 
-                const height = visibleHeightAtZDepth(zz, self.camera) - 10;
-                const width = visibleWidthAtZDepth(zz, self.camera) - 10;
-                const posY = size/4 * (n - i);
-                const posX = size/2 * (n - i);
-
-                topGroup.add(createStupidObject(xx, height/2 - posY, zz, 0xaa0000));
-                bottomGroup.add(createStupidObject(xx, -height/2 + posY, zz, 0x00aa00));
-
-                leftGroup.add(createStupidObject(-width/2 + posX, -xx + (j * size / 2) - ((i - 1) * size / 2), zz, 0x0000aa));
-                rightGroup.add(createStupidObject(width/2 - posX, -xx  + (j * size / 2) - ((i - 1) * size / 2), zz, 0x00aaaa));
+                topGroup.add(createStupidObject(xx, yy + 150, zz, 0xaa0000));
+                topGroup.add(createStupidObject(xx, -yy - 150, zz, 0x00aa00));
             }
         }
+
+        initialX = 150 - size/2;
+        let initialY = (n) * size /2;
+        for(let i = 0; i < n - 1; i++){
+            for(let j = 0; j < 3; j++){
+                let xx = initialX - size/2 * i;
+                let yy = size * j;
+                let zz = 0;
+
+                leftGroup.add(createStupidObject(yy + 150, xx, zz, 0x0000aa));
+                rightGroup.add(createStupidObject(-yy - 150, xx, zz, 0x00aaaa));
+            }
+        }
+
+        // for(let i = 3; i < n; i++){
+        //     for(let j = 0; j < i * 2 - 1; j++){
+        //         const yy = y + i * size;
+        //         const xx = x + j * size - yy;
+        //         const zz = -i * size/2 + (size/2 * 2);
+
+        //         //pyramid kinda
+        //         // topGroup.add(createStupidObject(xx, yy - (i * size / 2), zz, 0xaa0000));
+        //         // bottomGroup.add(createStupidObject(xx, -yy + (i * size / 2), zz, 0x00aa00));
+        //         // leftGroup.add(createStupidObject(-yy, -xx + (j * size / 2) - ((i - 1) * size / 2), zz, 0x0000aa));
+        //         // rightGroup.add(createStupidObject(yy, -xx  + (j * size / 2) - ((i - 1) * size / 2), zz, 0x00aaaa));
+
+        //         // on edges
+        //         // const height = visibleHeightAtZDepth(zz, self.camera) - 10;
+        //         // const width = visibleWidthAtZDepth(zz, self.camera) - 10;
+        //         // const posY = size/4 * (n - i);
+        //         // const posX = size/2 * (n - i);
+        //         // topGroup.add(createStupidObject(xx, height/2 - posY, zz, 0xaa0000));
+        //         // bottomGroup.add(createStupidObject(xx, -height/2 + posY, zz, 0x00aa00));
+        //         // leftGroup.add(createStupidObject(-width/2 + posX, -xx + (j * size / 2) - ((i - 1) * size / 2), zz, 0x0000aa));
+        //         // rightGroup.add(createStupidObject(width/2 - posX, -xx  + (j * size / 2) - ((i - 1) * size / 2), zz, 0x00aaaa));
+        //     }
+        // }
 
         self.scene.add(topGroup);
         self.scene.add(bottomGroup);
@@ -192,14 +216,22 @@ export default class Scene {
             this.controls.setObjectToMove(object);
         }
 
-        this.controls.setScaleLimits(0, 100);
+        this.controls.setCurrentScale(object.scale.x);
+        this.controls.setScaleLimits(0.001, 100);
         this.controls.setScaleSpeed(.1);
         this.controls.enableVerticalRotation();
-        this.controls.setMaxVerticalRotationAngle(Math.PI / 4, Math.PI / 4);
+        // this.controls.setMaxVerticalRotationAngle(Math.PI / 4, Math.PI / 4);
         this.controls.setRotationSpeed(0.075);
     }
 
     updateMainModel(object){
+        const desiredWidth = 175;
+        let box = new THREE.Box3().setFromObject(object);
+        let width = box.max.x * 2;
+        let ratio = desiredWidth / width;
+
+        object.scale.set(ratio, ratio, ratio);
+
         if(this.mainModel){
             this.scene.remove(this.mainModel);
             this.animate();

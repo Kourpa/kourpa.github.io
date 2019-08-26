@@ -28,6 +28,10 @@ ObjectControls = function(camera, domElement, objectToMove) {
       maxDistance = max;
     };
 
+    this.setCurrentScale = function(newScale){
+      scale = newScale;
+    }
+
     this.setScaleLimits = function(min, max){
       minScale = min;
       maxScale = max;
