@@ -1,0 +1,1 @@
+self.__BUILD_MANIFEST = {"/portfolio":["static\u002Fcss\u002Fdd15c4cf6c18e128b2bf.css"]};self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()
